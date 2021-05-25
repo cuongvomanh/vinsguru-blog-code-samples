@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.FluxSink;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -18,11 +19,11 @@ import java.util.stream.Collectors;
 public class OrderService {
 
     // product price map
-    private static final Map<Integer, Double> PRODUCT_PRICE =  Map.of(
-            1, 100d,
-            2, 200d,
-            3, 300d
-    );
+    private static final Map<Integer, Double> PRODUCT_PRICE = new HashMap<Integer, Double>() {{
+        put(1, 100d);
+        put(2, 200d);
+        put(3, 300d);
+    }};
 
     @Autowired
     private PurchaseOrderRepository purchaseOrderRepository;
@@ -30,7 +31,7 @@ public class OrderService {
     @Autowired
     private FluxSink<OrchestratorRequestDTO> sink;
 
-    public PurchaseOrder createOrder(OrderRequestDTO orderRequestDTO){
+    public PurchaseOrder createOrder(OrderRequestDTO orderRequestDTO) {
         PurchaseOrder purchaseOrder = this.purchaseOrderRepository.save(this.dtoToEntity(orderRequestDTO));
         this.sink.next(this.getOrchestratorRequestDTO(orderRequestDTO));
         return purchaseOrder;
@@ -43,7 +44,7 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
-    private PurchaseOrder dtoToEntity(final OrderRequestDTO dto){
+    private PurchaseOrder dtoToEntity(final OrderRequestDTO dto) {
         PurchaseOrder purchaseOrder = new PurchaseOrder();
         purchaseOrder.setId(dto.getOrderId());
         purchaseOrder.setProductId(dto.getProductId());
@@ -53,7 +54,7 @@ public class OrderService {
         return purchaseOrder;
     }
 
-    private OrderResponseDTO entityToDto(final PurchaseOrder purchaseOrder){
+    private OrderResponseDTO entityToDto(final PurchaseOrder purchaseOrder) {
         OrderResponseDTO dto = new OrderResponseDTO();
         dto.setOrderId(purchaseOrder.getId());
         dto.setProductId(purchaseOrder.getProductId());
@@ -63,7 +64,7 @@ public class OrderService {
         return dto;
     }
 
-    public OrchestratorRequestDTO getOrchestratorRequestDTO(OrderRequestDTO orderRequestDTO){
+    public OrchestratorRequestDTO getOrchestratorRequestDTO(OrderRequestDTO orderRequestDTO) {
         OrchestratorRequestDTO requestDTO = new OrchestratorRequestDTO();
         requestDTO.setUserId(orderRequestDTO.getUserId());
         requestDTO.setAmount(PRODUCT_PRICE.get(orderRequestDTO.getProductId()));

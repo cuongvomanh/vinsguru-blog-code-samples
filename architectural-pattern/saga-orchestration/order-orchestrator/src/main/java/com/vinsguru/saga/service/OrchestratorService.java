@@ -14,6 +14,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -53,7 +54,7 @@ public class OrchestratorService {
     private Workflow getOrderWorkflow(OrchestratorRequestDTO requestDTO){
         WorkflowStep paymentStep = new PaymentStep(this.paymentClient, this.getPaymentRequestDTO(requestDTO));
         WorkflowStep inventoryStep = new InventoryStep(this.inventoryClient, this.getInventoryRequestDTO(requestDTO));
-        return new OrderWorkflow(List.of(paymentStep, inventoryStep));
+        return new OrderWorkflow(Arrays.asList(paymentStep, inventoryStep));
     }
 
     private OrchestratorResponseDTO getResponseDTO(OrchestratorRequestDTO requestDTO, OrderStatus status){
