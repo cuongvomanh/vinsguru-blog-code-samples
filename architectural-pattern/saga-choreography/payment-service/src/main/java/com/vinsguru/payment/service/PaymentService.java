@@ -1,6 +1,7 @@
 package com.vinsguru.payment.service;
 
 import com.vinsguru.dto.PaymentDto;
+import com.vinsguru.dto.PurchaseOrderDto;
 import com.vinsguru.events.order.OrderEvent;
 import com.vinsguru.events.payment.PaymentEvent;
 import com.vinsguru.events.payment.PaymentStatus;
@@ -22,8 +23,8 @@ public class PaymentService {
 
     @Transactional
     public PaymentEvent newOrderEvent(OrderEvent orderEvent){
-        var purchaseOrder = orderEvent.getPurchaseOrder();
-        var dto = PaymentDto.of(purchaseOrder.getOrderId(), purchaseOrder.getUserId(), purchaseOrder.getPrice());
+        PurchaseOrderDto purchaseOrder = orderEvent.getPurchaseOrder();
+        PaymentDto dto = new PaymentDto(purchaseOrder.getOrderId(), purchaseOrder.getUserId(), purchaseOrder.getPrice());
         return this.balanceRepository.findById(purchaseOrder.getUserId())
                 .filter(ub -> ub.getBalance() >= purchaseOrder.getPrice())
                 .map(ub -> {

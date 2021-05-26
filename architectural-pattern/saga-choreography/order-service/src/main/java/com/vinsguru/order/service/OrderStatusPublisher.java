@@ -15,13 +15,13 @@ public class OrderStatusPublisher {
     private Sinks.Many<OrderEvent> orderSink;
 
     public void raiseOrderEvent(final PurchaseOrder purchaseOrder, OrderStatus orderStatus){
-        var dto = PurchaseOrderDto.of(
+        PurchaseOrderDto dto = new PurchaseOrderDto(
                 purchaseOrder.getId(),
                 purchaseOrder.getProductId(),
                 purchaseOrder.getPrice(),
                 purchaseOrder.getUserId()
         );
-        var orderEvent = new OrderEvent(dto, orderStatus);
+        OrderEvent orderEvent = new OrderEvent(dto, orderStatus);
         this.orderSink.tryEmitNext(orderEvent);
     }
 

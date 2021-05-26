@@ -34,8 +34,8 @@ public class OrderStatusUpdateEventHandler {
     private void updateOrder(PurchaseOrder purchaseOrder){
         if(Objects.isNull(purchaseOrder.getInventoryStatus()) || Objects.isNull(purchaseOrder.getPaymentStatus()))
             return;
-        var isComplete = PaymentStatus.RESERVED.equals(purchaseOrder.getPaymentStatus()) && InventoryStatus.RESERVED.equals(purchaseOrder.getInventoryStatus());
-        var orderStatus = isComplete ? OrderStatus.ORDER_COMPLETED : OrderStatus.ORDER_CANCELLED;
+        Boolean isComplete = PaymentStatus.RESERVED.equals(purchaseOrder.getPaymentStatus()) && InventoryStatus.RESERVED.equals(purchaseOrder.getInventoryStatus());
+        OrderStatus orderStatus = isComplete ? OrderStatus.ORDER_COMPLETED : OrderStatus.ORDER_CANCELLED;
         purchaseOrder.setOrderStatus(orderStatus);
         if (!isComplete){
             this.publisher.raiseOrderEvent(purchaseOrder, orderStatus);

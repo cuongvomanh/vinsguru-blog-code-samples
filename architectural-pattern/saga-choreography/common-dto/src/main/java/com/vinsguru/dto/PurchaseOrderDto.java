@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor(staticName = "of")
+//@AllArgsConstructor(staticName = "of")
 public class PurchaseOrderDto {
 
     private UUID orderId;
@@ -16,4 +16,10 @@ public class PurchaseOrderDto {
     private Integer price;
     private Integer userId;
 
+    public PurchaseOrderDto(UUID orderId, Integer productId, Integer price, Integer userId) {
+        this.orderId = orderId;
+        this.productId = productId;
+        this.price = price;
+        this.userId = userId;
+    }
 }
