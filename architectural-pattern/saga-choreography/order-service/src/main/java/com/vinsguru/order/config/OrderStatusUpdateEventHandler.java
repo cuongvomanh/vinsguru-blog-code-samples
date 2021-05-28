@@ -31,7 +31,7 @@ public class OrderStatusUpdateEventHandler {
 
     }
 
-    private void updateOrder(PurchaseOrder purchaseOrder){
+    public void updateOrder(PurchaseOrder purchaseOrder){
         if(Objects.isNull(purchaseOrder.getInventoryStatus()) || Objects.isNull(purchaseOrder.getPaymentStatus()))
             return;
         Boolean isComplete = PaymentStatus.RESERVED.equals(purchaseOrder.getPaymentStatus()) && InventoryStatus.RESERVED.equals(purchaseOrder.getInventoryStatus());

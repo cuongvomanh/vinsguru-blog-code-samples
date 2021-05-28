@@ -4,6 +4,7 @@ import com.vinsguru.dto.OrderRequestDto;
 import com.vinsguru.events.order.OrderStatus;
 import com.vinsguru.order.entity.PurchaseOrder;
 import com.vinsguru.order.repository.PurchaseOrderRepository;
+import com.vinsguru.order.service.error.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +36,11 @@ public class OrderCommandService {
         purchaseOrder.setProductId(dto.getProductId());
         purchaseOrder.setUserId(dto.getUserId());
         purchaseOrder.setOrderStatus(OrderStatus.ORDER_CREATED);
-        purchaseOrder.setPrice(productPriceMap.get(purchaseOrder.getProductId()));
+        Integer price = productPriceMap.get(purchaseOrder.getProductId());
+        if (price == null){
+            throw new CustomException();
+        }
+        purchaseOrder.setPrice(price);
         return purchaseOrder;
     }
 

@@ -23,7 +23,7 @@ public class PaymentConfig {
         return flux -> flux.flatMap(this::processPayment);
     }
 
-    private Mono<PaymentEvent> processPayment(OrderEvent event){
+    public Mono<PaymentEvent> processPayment(OrderEvent event){
         if(event.getOrderStatus().equals(OrderStatus.ORDER_CREATED)){
             return Mono.fromSupplier(() -> this.service.newOrderEvent(event));
         }else{

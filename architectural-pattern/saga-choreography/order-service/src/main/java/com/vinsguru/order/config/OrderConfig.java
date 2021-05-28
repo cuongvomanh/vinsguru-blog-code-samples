@@ -9,7 +9,8 @@ import reactor.core.publisher.Sinks;
 import java.util.function.Supplier;
 
 @Configuration
-public class OrderConfig {
+public class
+OrderConfig {
 
     @Bean
     public Sinks.Many<OrderEvent> orderSink(){
