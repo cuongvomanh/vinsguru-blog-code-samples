@@ -20,10 +20,10 @@ public class InventoryConfig {
 
     @Bean
     public Function<Flux<OrderEvent>, Flux<InventoryEvent>> inventoryProcessor() {
-        return flux -> flux.flatMap(this::processInventory);
+        return flux -> flux.flatMap((OrderEvent event) -> this.processInventory(event));
     }
 
-    private Mono<InventoryEvent> processInventory(OrderEvent event){
+    public Mono<InventoryEvent> processInventory(OrderEvent event){
         if(event.getOrderStatus().equals(OrderStatus.ORDER_CREATED)){
             return Mono.fromSupplier(() -> this.service.newOrderInventory(event));
         }

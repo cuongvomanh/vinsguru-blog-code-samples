@@ -7,6 +7,8 @@ import com.vinsguru.events.order.OrderEvent;
 import com.vinsguru.inventory.entity.OrderInventoryConsumption;
 import com.vinsguru.inventory.repository.OrderInventoryConsumptionRepository;
 import com.vinsguru.inventory.repository.OrderInventoryRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class InventoryService {
 
+    private static Logger LOGGER = LoggerFactory.getLogger(InventoryService.class);
     @Autowired
     private OrderInventoryRepository inventoryRepository;
 
@@ -23,14 +26,20 @@ public class InventoryService {
     @Transactional
     public InventoryEvent newOrderInventory(OrderEvent orderEvent){
         InventoryDto dto = InventoryDto.of(orderEvent.getPurchaseOrder().getOrderId(), orderEvent.getPurchaseOrder().getProductId());
-        return inventoryRepository.findById(orderEvent.getPurchaseOrder().getProductId())
+        InventoryEvent inventoryEvent = inventoryRepository.findById(orderEvent.getPurchaseOrder().getProductId())
                 .filter(i -> i.getAvailableInventory() > 0 )
                 .map(i -> {
                     i.setAvailableInventory(i.getAvailableInventory() - 1);
-                    consumptionRepository.save(OrderInventoryConsumption.of(orderEvent.getPurchaseOrder().getOrderId(), orderEvent.getPurchaseOrder().getProductId(), 1));
-                    return new InventoryEvent(dto, InventoryStatus.RESERVED);
+                    try {
+                        consumptionRepository.save(OrderInventoryConsumption.of(orderEvent.getPurchaseOrder().getOrderId(), orderEvent.getPurchaseOrder().getProductId(), 1));
+                        return new InventoryEvent(dto, InventoryStatus.RESERVED);
+                    } catch (Exception exception){
+                        return null;
+                    }
                 })
                 .orElse(new InventoryEvent(dto, InventoryStatus.REJECTED));
+        LOGGER.info("Inventory created");
+        return inventoryEvent;
     }
 
     @Transactional
@@ -43,6 +52,7 @@ public class InventoryService {
                             );
                     consumptionRepository.delete(ci);
                 });
+        LOGGER.info("Inventory cancel");
     }
 
 }
