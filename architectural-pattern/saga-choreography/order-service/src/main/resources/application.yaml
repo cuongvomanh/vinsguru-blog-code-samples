@@ -1,12 +1,29 @@
 server:
   port: 8080
-spring.cloud.stream:
-  function:
-    definition: orderSupplier;paymentEventConsumer;inventoryEventConsumer
-  bindings:
-    orderSupplier-out-0:
-      destination: order-event
-    paymentEventConsumer-in-0:
-      destination: payment-event
-    inventoryEventConsumer-in-0:
-      destination: inventory-event
+spring:
+  cloud.stream:
+    kafka.binder.brokers: cuongpc.localdomain:9092
+    function:
+      definition: orderSupplier;paymentEventConsumer;inventoryEventConsumer
+    bindings:
+      orderSupplier-out-0:
+        destination: order-event
+      paymentEventConsumer-in-0:
+        destination: payment-event
+      inventoryEventConsumer-in-0:
+        destination: inventory-event
+  datasource:
+    url: jdbc:h2:file:./db/orderDb
+    driverClassName: org.h2.Driver
+    username: sa
+    initialization-mode: always
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate.ddl-auto: create-drop
+    show-sql: true
+    properties.hibernate:
+      validator.apply_to_ddl: false
+      format_sql: true
+  h2.console:
+    enabled: true
+    path: /h2-console
