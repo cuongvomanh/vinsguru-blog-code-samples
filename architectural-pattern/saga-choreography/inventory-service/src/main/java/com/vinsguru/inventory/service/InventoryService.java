@@ -25,7 +25,7 @@ public class InventoryService {
 
     @Transactional
     public InventoryEvent newOrderInventory(OrderEvent orderEvent){
-        InventoryDto dto = InventoryDto.of(orderEvent.getPurchaseOrder().getOrderId(), orderEvent.getPurchaseOrder().getProductId());
+        InventoryDto dto = InventoryDto.of(orderEvent.getPurchaseOrder().getOrderId(), orderEvent.getPurchaseOrder().getProductId(), null);
         InventoryEvent inventoryEvent = inventoryRepository.findById(orderEvent.getPurchaseOrder().getProductId())
                 .filter(i -> i.getAvailableInventory() > 0 )
                 .map(i -> {

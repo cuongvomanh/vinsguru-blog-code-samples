@@ -30,7 +30,7 @@ public class OrderStatusUpdateEventHandler {
                 .ifPresent(consumer.andThen(this::updateOrder));
 
     }
-
+    
     public void updateOrder(PurchaseOrder purchaseOrder){
         if(Objects.isNull(purchaseOrder.getInventoryStatus()) || Objects.isNull(purchaseOrder.getPaymentStatus()))
             return;

@@ -1,13 +1,16 @@
 package com.vinsguru.order.service;
 
+import com.vinsguru.dto.InventoryDto;
 import com.vinsguru.dto.OrderRequestDto;
 import com.vinsguru.events.order.OrderStatus;
+import com.vinsguru.order.config.Constant;
 import com.vinsguru.order.entity.PurchaseOrder;
 import com.vinsguru.order.repository.PurchaseOrderRepository;
-import com.vinsguru.order.service.error.CustomException;
+import com.vinsguru.order.service.error.BadRequestCustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Map;
 
@@ -23,8 +26,19 @@ public class OrderCommandService {
     @Autowired
     private OrderStatusPublisher publisher;
 
+    @Autowired
+    private InventoryService inventoryService;
+
     @Transactional
     public PurchaseOrder createOrder(OrderRequestDto orderRequestDTO){
+        try {
+            InventoryDto inventoryDto = inventoryService.findByProductId(orderRequestDTO.getProductId());
+            if (inventoryDto == null || inventoryDto.getAvailableInventory() <= 0){
+                throw new BadRequestCustomException(Constant.PRODUCT_NOT_FOUND_OR_PRODUCT_OUT_OF_INVENTORY);
+            }
+        } catch (HttpClientErrorException.BadRequest badRequest){
+            throw new BadRequestCustomException(Constant.PRODUCT_NOT_FOUND_OR_PRODUCT_OUT_OF_INVENTORY);
+        }
         PurchaseOrder purchaseOrder = this.purchaseOrderRepository.save(this.dtoToEntity(orderRequestDTO));
         this.publisher.raiseOrderEvent(purchaseOrder, OrderStatus.ORDER_CREATED);
         return purchaseOrder;
@@ -38,7 +52,7 @@ public class OrderCommandService {
         purchaseOrder.setOrderStatus(OrderStatus.ORDER_CREATED);
         Integer price = productPriceMap.get(purchaseOrder.getProductId());
         if (price == null){
-            throw new CustomException();
+            throw new RuntimeException(Constant.PRICE_IS_UNKNOW);
         }
         purchaseOrder.setPrice(price);
         return purchaseOrder;

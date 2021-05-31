@@ -13,5 +13,6 @@ public class InventoryDto {
 
     private UUID orderId;
     private Integer productId;
+    private Integer availableInventory;
 
 }
