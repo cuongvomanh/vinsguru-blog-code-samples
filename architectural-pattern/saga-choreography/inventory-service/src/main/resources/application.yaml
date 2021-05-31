@@ -1,6 +1,5 @@
 spring:
   cloud.stream:
-    kafka.binder.brokers: cuongpc.localdomain:9092
     function:
       definition: inventoryProcessor
     bindings:
@@ -8,18 +7,3 @@ spring:
         destination: order-event
       inventoryProcessor-out-0:
         destination: inventory-event
-  datasource:
-    url: jdbc:h2:./db/inventoryDb
-    driverClassName: org.h2.Driver
-    username: sa
-    initialization-mode: always
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    hibernate.ddl-auto: create-drop
-    show-sql: true
-    properties.hibernate:
-      validator.apply_to_ddl: false
-      format_sql: true
-  h2.console:
-    enabled: true
-    path: /h2-console
