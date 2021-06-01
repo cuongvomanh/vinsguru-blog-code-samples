@@ -28,13 +28,14 @@ public class PaymentService {
     @Transactional
     public PaymentEvent newOrderEvent(OrderEvent orderEvent){
         PurchaseOrderDto purchaseOrder = orderEvent.getPurchaseOrder();
-        PaymentDto dto = new PaymentDto(purchaseOrder.getOrderId(), purchaseOrder.getUserId(), purchaseOrder.getPrice());
+        PaymentDto dto = PaymentDto.of(purchaseOrder.getOrderId(), purchaseOrder.getUserId(), purchaseOrder.getPrice(), null);
         return this.balanceRepository.findById(purchaseOrder.getUserId())
                 .filter(ub -> ub.getBalance() >= purchaseOrder.getPrice())
                 .map(ub -> {
                     ub.setBalance(ub.getBalance() - purchaseOrder.getPrice());
                     try {
                         this.transactionRepository.save(UserTransaction.of(purchaseOrder.getOrderId(), purchaseOrder.getUserId(), purchaseOrder.getPrice()));
+                        LOGGER.info("Payment success!");
                     } catch (Exception exception){
                         LOGGER.error("Exception", exception);
                         return null;
@@ -50,7 +51,10 @@ public class PaymentService {
                 .ifPresent(ut -> {
                     this.transactionRepository.delete(ut);
                     this.balanceRepository.findById(ut.getUserId())
-                            .ifPresent(ub -> ub.setBalance(ub.getBalance() + ut.getAmount()));
+                            .ifPresent(ub -> {
+                                ub.setBalance(ub.getBalance() + ut.getAmount());
+                                LOGGER.info("Cancel Order success!");
+                            });
                 });
     }
 }

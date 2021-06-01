@@ -31,7 +31,6 @@ public class InventoryService {
                 .map(i -> {
                     i.setAvailableInventory(i.getAvailableInventory() - 1);
                     try {
-                        inventoryRepository.save(i);
                         consumptionRepository.save(OrderInventoryConsumption.of(orderEvent.getPurchaseOrder().getOrderId(), orderEvent.getPurchaseOrder().getProductId(), 1));
                         return new InventoryEvent(dto, InventoryStatus.RESERVED);
                     } catch (Exception exception){

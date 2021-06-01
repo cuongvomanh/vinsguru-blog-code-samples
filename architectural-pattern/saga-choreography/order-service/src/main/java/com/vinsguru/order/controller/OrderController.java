@@ -28,9 +28,9 @@ public class OrderController {
     public ResponseEntity<CustomResponse<PurchaseOrder>> createOrder(@RequestBody OrderRequestDto requestDTO){
         requestDTO.setOrderId(UUID.randomUUID());
         try {
-            return ResponseEntity.ok().body(new CustomResponse<>(null, this.commandService.createOrder(requestDTO)));
+            return ResponseEntity.ok().body(CustomResponse.of(null, this.commandService.createOrder(requestDTO)));
         } catch (BadRequestCustomException exception){
-            return ResponseEntity.badRequest().body(new CustomResponse<>(exception.getMessage(), null));
+            return ResponseEntity.badRequest().body(CustomResponse.of(exception.getMessage(), null));
         }
     }
 

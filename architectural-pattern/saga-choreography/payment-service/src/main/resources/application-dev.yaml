@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:h2:file:./db/paymentDb;AUTO_SERVER=TRUE
+    url: jdbc:h2:mem:payment
     driverClassName: org.h2.Driver
     username: sa
     initialization-mode: always

@@ -14,3 +14,4 @@ spring:
         destination: inventory-event
 service:
   inventory_service_url: "http://localhost:8085"
+  payment_service_url: "http://localhost:8084"
