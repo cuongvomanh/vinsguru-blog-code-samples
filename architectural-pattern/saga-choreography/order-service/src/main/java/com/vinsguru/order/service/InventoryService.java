@@ -10,9 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @Service
 public class InventoryService {
@@ -28,9 +26,6 @@ public class InventoryService {
             return inventoryDtoResponseEntity;
         } catch (HttpClientErrorException.BadRequest ex) {
             LOGGER.error(Constant.PRODUCT_NOT_FOUND_OR_PRODUCT_OUT_OF_INVENTORY);
-            throw ex;
-        } catch (HttpServerErrorException.InternalServerError ex){
-            LOGGER.error("could not get /inventory/findByProductId");
             throw ex;
         } catch (Exception exception){
             LOGGER.error("ERROR when call /inventory/findByProductId");

@@ -9,6 +9,7 @@ spring:
         destination: order-event
       paymentEventConsumer-in-0:
         destination: payment-event
+        group: order-group
       inventoryEventConsumer-in-0:
         destination: inventory-event
 service:

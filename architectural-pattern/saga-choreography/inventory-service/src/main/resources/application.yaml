@@ -6,5 +6,6 @@ spring:
     bindings:
       inventoryProcessor-in-0:
         destination: order-event
+        group: inventory-group
       inventoryProcessor-out-0:
         destination: inventory-event

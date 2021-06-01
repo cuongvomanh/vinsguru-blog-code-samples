@@ -7,6 +7,8 @@ import com.vinsguru.order.config.Constant;
 import com.vinsguru.order.entity.PurchaseOrder;
 import com.vinsguru.order.repository.PurchaseOrderRepository;
 import com.vinsguru.order.service.error.BadRequestCustomException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +31,8 @@ public class OrderCommandService {
     @Autowired
     private InventoryService inventoryService;
 
+    private static Logger LOGGER = LoggerFactory.getLogger(OrderCommandService.class);
+
     @Transactional
     public PurchaseOrder createOrder(OrderRequestDto orderRequestDTO){
         try {
@@ -38,6 +42,8 @@ public class OrderCommandService {
             }
         } catch (HttpClientErrorException.BadRequest badRequest){
             throw new BadRequestCustomException(Constant.PRODUCT_NOT_FOUND_OR_PRODUCT_OUT_OF_INVENTORY);
+        } catch (Exception exception){
+            LOGGER.error("Get inventory have Exception!");
         }
         PurchaseOrder purchaseOrder = this.purchaseOrderRepository.save(this.dtoToEntity(orderRequestDTO));
         this.publisher.raiseOrderEvent(purchaseOrder, OrderStatus.ORDER_CREATED);
