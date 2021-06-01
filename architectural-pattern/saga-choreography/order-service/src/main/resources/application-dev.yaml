@@ -7,7 +7,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate.ddl-auto: create-drop
-    show-sql: true
+    show-sql: false
     properties.hibernate:
       validator.apply_to_ddl: false
       format_sql: true

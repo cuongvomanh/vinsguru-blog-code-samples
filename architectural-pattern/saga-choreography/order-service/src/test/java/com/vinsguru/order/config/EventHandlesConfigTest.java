@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.function.Consumer;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -31,7 +32,7 @@ public class EventHandlesConfigTest {
         InventoryEvent inventoryEvent = new InventoryEvent();
         InventoryDto inventoryDto = new InventoryDto();
         inventoryEvent.setInventory(inventoryDto);
-        consumer.accept(inventoryEvent);
+        assertAll(() -> consumer.accept(inventoryEvent));
     }
 
     @Test
