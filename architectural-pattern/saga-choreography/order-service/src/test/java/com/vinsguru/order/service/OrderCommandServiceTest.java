@@ -2,6 +2,7 @@ package com.vinsguru.order.service;
 
 import com.vinsguru.dto.InventoryDto;
 import com.vinsguru.dto.OrderRequestDto;
+import com.vinsguru.order.config.Constant;
 import com.vinsguru.order.entity.PurchaseOrder;
 import com.vinsguru.order.repository.PurchaseOrderRepository;
 import com.vinsguru.order.service.error.BadRequestCustomException;
@@ -12,11 +13,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.HashMap;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -67,10 +68,9 @@ public class OrderCommandServiceTest {
     }
 
     @Test
-    public void testCreateOrder_whenProductPriceNotFound(){
-        when(inventoryService.findByProductId(Mockito.any())).thenReturn(InventoryDto.of(null, 1, 2));
+    public void testCreateOrder_whenProductNotFound(){
         when(productPriceMap.get(Mockito.any())).thenReturn(null);
-        assertThrows(RuntimeException.class, () -> orderCommandService.createOrder(orderRequestDto));
+        assertThrows(BadRequestCustomException.class, () -> orderCommandService.createOrder(orderRequestDto));
     }
 
     @Test
@@ -84,14 +84,23 @@ public class OrderCommandServiceTest {
 
     @Test
     public void testCreateOrder_whenOutOfProductInventory(){
+        when(productPriceMap.get(Mockito.any())).thenReturn(10);
         when(inventoryService.findByProductId(Mockito.any())).thenReturn(InventoryDto.of(null, 1, 0));
         assertThrows(BadRequestCustomException.class, () -> orderCommandService.createOrder(orderRequestDto));
     }
 
     @Test
     public void testCreateOrder_whenErrorGetProductInventory(){
-        when(inventoryService.findByProductId(Mockito.any())).thenThrow(new IllegalStateException());
-        assertThrows(IllegalStateException.class, () -> orderCommandService.createOrder(orderRequestDto));
+        when(productPriceMap.get(Mockito.any())).thenReturn(10);
+        when(inventoryService.findByProductId(Mockito.any())).thenThrow(new NullPointerException());
+        assertAll(() -> orderCommandService.createOrder(orderRequestDto));
+    }
+
+    @Test
+    public void testCreateOrder_whenCustomBadRequestExceptionWhenFindProductInventory(){
+        when(productPriceMap.get(Mockito.any())).thenReturn(10);
+        when(inventoryService.findByProductId(Mockito.any())).thenThrow(new BadRequestCustomException(Constant.PRODUCT_NOT_FOUND));
+        assertThrows(BadRequestCustomException.class ,() -> orderCommandService.createOrder(orderRequestDto));
     }
 
 }
